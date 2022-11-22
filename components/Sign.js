@@ -6,6 +6,23 @@ export default function Sign({ title, setter }) {
   );
   const [ecdsa, setEcdsa] = useState();
 
+  const addRing3Record = async (ring3Record) => {
+    const response = await fetch("/api/addRing3Record", {
+      method: "POST",
+      body: JSON.stringify(ring3Record),
+      headers: {
+        "Content-Type": "application/json; charset=utf8",
+      },
+    });
+
+    console.log({ response });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    return await response.json();
+  };
   async function signMessage(target) {
     if (!window.ethereum) return alert("Please Install Metamask");
     const ethereum = window.ethereum;
@@ -42,6 +59,17 @@ export default function Sign({ title, setter }) {
     console.log({ r, s, v });
     setEcdsa({ r, s, v, signature, signer });
     setter({ signer: signer, signature: signature });
+    const data = {
+      gifterAdd: signer,
+      recipientAdd: message,
+      gifterSig: signature,
+      recipientSig: "",
+    };
+    try {
+      await addRing3Record(data);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleChange = (e) => {
