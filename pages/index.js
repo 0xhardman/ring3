@@ -5,18 +5,17 @@ import Sign from "../components/Sign";
 import Mint from "../components/Mint";
 import GifterSign from "../components/GifterSign";
 import RecipientSign from "../components/RecipientSign";
+import GifterMint from "../components/GifterMint";
 import { useEffect, useState } from "react";
-// import { Button, fonts } from "web3uikit";
 import { TextField, Button } from "@mui/material";
 import { useMoralis } from "react-moralis";
 
 export default function Home() {
   const { account, isWeb3EnableLoading } = useMoralis();
-  const [a, setA] = useState(0);
-  const [b, setB] = useState(0);
   //0:gifter sign 1:recipient sign  2:sync mint 3:check ring3
   const [active, setActive] = useState(0);
   const [signed, setSigned] = useState(false);
+  const [mintParams, setMintParams] = useState({});
   const [signedAddress, setSignedAddress] = useState("");
   const getGifterRecord = async (gifterAdd) => {
     const response = await fetch(
@@ -56,11 +55,8 @@ export default function Home() {
     try {
       //warn: a record
       const gifterRecord = await getGifterRecord(account);
-      //warn: an array
       const recipientRecords = await getRecipientRecord(account);
       const recipientRecord = recipientRecords[0];
-      console.log(gifterRecord);
-      console.log(recipientRecord);
       if (!gifterRecord && !recipientRecord) {
         setActive(0);
         setSigned(false);
@@ -75,6 +71,12 @@ export default function Home() {
         } else {
           setActive(2);
           setSigned(true);
+          setMintParams({
+            toA: gifterRecord.gifterAdd,
+            toB: gifterRecord.recipientAdd,
+            signatureA: gifterRecord.gifterSig,
+            signatureB: gifterRecord.recipientSig,
+          });
           return;
         }
       }
@@ -86,7 +88,8 @@ export default function Home() {
           return;
         } else {
           setActive(1);
-          setSigned(false);
+          setSigned(true);
+          setSignedAddress(recipientRecord.gifterAdd);
           return;
         }
       }
@@ -148,6 +151,7 @@ export default function Home() {
             signedAddress={signedAddress}
           />
         )}
+        {active == 2 && <GifterMint params={mintParams} />}
       </div>
       {/* todo:componentlize  */}
       <div className="absolute flex justify-center border-t-[3px] border-black border-dashed w-screen bg-blue bottom-[100px] px-[10px]">
