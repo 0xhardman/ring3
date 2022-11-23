@@ -3,14 +3,12 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
-
   try {
-    const data = req.body;
-    const ring3Record = await prisma.Ring3Record.create({
-      data: data,
+    const gifterAdd = req.query.gifterAdd;
+    const ring3Record = await prisma.Ring3Record.findUnique({
+      where: {
+        gifterAdd: gifterAdd,
+      },
     });
 
     res.status(200).json(ring3Record);
