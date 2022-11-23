@@ -4,6 +4,7 @@ import styles from "../styles/Home.module.css";
 import Sign from "../components/Sign";
 import Mint from "../components/Mint";
 import GifterSign from "../components/GifterSign";
+import RecipientSign from "../components/RecipientSign";
 import { useEffect, useState } from "react";
 // import { Button, fonts } from "web3uikit";
 import { TextField, Button } from "@mui/material";
@@ -81,6 +82,7 @@ export default function Home() {
         if (!recipientRecord.recipientSig) {
           setActive(1);
           setSigned(false);
+          setSignedAddress(recipientRecord.gifterAdd);
           return;
         } else {
           setActive(1);
@@ -134,6 +136,13 @@ export default function Home() {
         </div> */}
         {active == 0 && (
           <GifterSign
+            signed={signed}
+            setSigned={setSigned}
+            signedAddress={signedAddress}
+          />
+        )}
+        {active == 1 && (
+          <RecipientSign
             signed={signed}
             setSigned={setSigned}
             signedAddress={signedAddress}
