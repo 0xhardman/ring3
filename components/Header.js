@@ -33,7 +33,7 @@ export default function Home() {
   }, []);
 
   return (
-    <nav>
+    <nav className="absolute top-0 w-full">
       <div className="flex justify-between pt-[40px] px-[50px] m-[1px]">
         <div>Ring3 logo</div>
         <ConnectButton moralisAuth={false} />

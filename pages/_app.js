@@ -6,7 +6,7 @@ import Header from "../components/Header";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <>
+    <div className={"bg-[#F5F5F5] text-black h-screen"}>
       <Head>
         <title>Ring3</title>
         <meta
@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
         </NotificationProvider>
       </MoralisProvider>
-    </>
+    </div>
   );
 }
 
