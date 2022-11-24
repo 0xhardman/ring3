@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { abi, contractAddresses } from "../constants";
 import { useWeb3Contract, useMoralis } from "react-moralis";
 
-export default function GifterMint({ params }) {
+export default function GifterMint({ params, setSigned }) {
   const [minted, setMinted] = useState(false);
   const { chainId: chainIdHex, isWeb3Enabled } = useMoralis();
   const chainId = parseInt(chainIdHex);
@@ -21,8 +21,10 @@ export default function GifterMint({ params }) {
     params: params,
   });
 
-  const handleSuccess = () => {
+  const handleSuccess = async (tx) => {
+    await tx.wait(1);
     setMinted(true);
+    setSigned(true);
   };
   const handleMint = async () => {
     await safeMintRingSync({

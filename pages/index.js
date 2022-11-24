@@ -1,24 +1,30 @@
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import clsx from "clsx";
-
-import Sign from "../components/Sign";
-import Mint from "../components/Mint";
 import GifterSign from "../components/GifterSign";
 import RecipientSign from "../components/RecipientSign";
 import GifterMint from "../components/GifterMint";
 import { useEffect, useState } from "react";
 import { TextField, Button } from "@mui/material";
-import { useMoralis } from "react-moralis";
+import { useMoralis, useWeb3Contract } from "react-moralis";
+import { abi, contractAddresses } from "../constants";
 
 export default function Home() {
-  const { account, isWeb3EnableLoading } = useMoralis();
+  const { account, isWeb3EnableLoading, chainId: chainIdHex } = useMoralis();
 
   //0:loading 1:gifter sign 2:recipient sign  3:sync mint 4:check ring3
   const [active, setActive] = useState(0);
   const [signed, setSigned] = useState(false);
   const [mintParams, setMintParams] = useState({});
   const [signedAddress, setSignedAddress] = useState("");
+
+  const chainId = parseInt(chainIdHex);
+  const mintRingAddress =
+    chainId in contractAddresses ? contractAddresses[chainId][0] : null;
+
+  //chain reader
+  const { data, error, runContractFunction, isFetching, isLoading } =
+    useWeb3Contract();
 
   // api getter
   const getGifterRecord = async (gifterAdd) => {
@@ -75,14 +81,41 @@ export default function Home() {
           setSignedAddress(gifterRecord.recipientAdd);
           return;
         } else {
-          setActive(3);
-          setSigned(true);
-          setMintParams({
-            toA: gifterRecord.gifterAdd,
-            toB: gifterRecord.recipientAdd,
-            signatureA: gifterRecord.gifterSig,
-            signatureB: gifterRecord.recipientSig,
+          const tokenId = await runContractFunction({
+            params: {
+              contractAddress: mintRingAddress,
+              abi: abi,
+              functionName: "tokenOfOwnerByIndex",
+              params: { owner: account, index: 0 },
+            },
+            onError: (error) => {
+              console.log(error);
+            },
           });
+          console.log({ tokenId });
+          console.log(!tokenId);
+          if (!tokenId) {
+            setMintParams({
+              toA: gifterRecord.gifterAdd,
+              toB: gifterRecord.recipientAdd,
+              signatureA: gifterRecord.gifterSig,
+              signatureB: gifterRecord.recipientSig,
+            });
+            setActive(3);
+            console.log(active);
+          } else {
+            const uri = await runContractFunction({
+              params: {
+                contractAddress: mintRingAddress,
+                abi: abi,
+                functionName: "tokenURI",
+                params: { tokenId: tokenId },
+              },
+              onError: (error) => console.log(error),
+            });
+            console.log({ uri });
+            setActive(4);
+          }
           return;
         }
       }
@@ -93,9 +126,36 @@ export default function Home() {
           setSignedAddress(recipientRecord.gifterAdd);
           return;
         } else {
-          setActive(2);
-          setSigned(true);
-          setSignedAddress(recipientRecord.gifterAdd);
+          const tokenId = await runContractFunction({
+            params: {
+              contractAddress: mintRingAddress,
+              abi: abi,
+              functionName: "tokenOfOwnerByIndex",
+              params: { owner: account, index: 0 },
+            },
+            onError: (error) => {
+              console.log(error);
+            },
+          });
+          console.log({ tokenId });
+          console.log(!tokenId);
+          if (!tokenId) {
+            setActive(2);
+            setSigned(true);
+            setSignedAddress(recipientRecord.gifterAdd);
+          } else {
+            const uri = await runContractFunction({
+              params: {
+                contractAddress: mintRingAddress,
+                abi: abi,
+                functionName: "tokenURI",
+                params: { tokenId: tokenId },
+              },
+              onError: (error) => console.log(error),
+            });
+            console.log({ uri });
+            setActive(4);
+          }
           return;
         }
       }
@@ -107,11 +167,11 @@ export default function Home() {
     if (!account) return;
     checkUser();
     console.log(active);
-  }, [account]);
+  }, [account, signed]);
   return (
     <div className={"h-screen w-screen flex justify-center items-center "}>
       <div className={"flex items-center h-[480px] "}>
-        <div className="mr-[120px] ">
+        <div className=" ">
           <img src="/svg/ring.svg" alt="An SVG of an eye" />
           {active == 0 && (
             <p className="text-center text-2xl font-semibold italic">
@@ -134,7 +194,9 @@ export default function Home() {
             signedAddress={signedAddress}
           />
         )}
-        {active == 3 && <GifterMint params={mintParams} />}
+        {active == 3 && (
+          <GifterMint params={mintParams} setSigned={setSigned} />
+        )}
       </div>
       {active != 0 && (
         <>
