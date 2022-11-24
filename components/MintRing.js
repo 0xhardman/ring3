@@ -33,18 +33,6 @@ export default function MintRing() {
     params: {},
     msgValue: {},
   });
-  // useEffect(() => {
-  //   if (isWeb3Enabled) {
-  //     const something = await getEntranceFee();
-  //     console.log(something);
-  //   }
-  // }, []);
-  // const { runContractFunction: enterRingMint } = useWeb3Contract({
-  //   contractAddress: mintRingAddress,
-  //   abi: abi,
-  //   functionName: "mintRingFunction",
-  //   params: {},
-  //   msgValue: {},
-  // });
+
   return <div></div>;
 }

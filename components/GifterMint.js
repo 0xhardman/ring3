@@ -1,11 +1,13 @@
 import Web3 from "web3";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Alert } from "@mui/material";
 import { useState, useEffect } from "react";
 import { abi, contractAddresses } from "../constants";
 import { useWeb3Contract, useMoralis } from "react-moralis";
+import { useNotification } from "web3uikit";
 
 export default function GifterMint({ params, setSigned }) {
   const [minted, setMinted] = useState(false);
+  const dispatch = useNotification();
   const { chainId: chainIdHex, isWeb3Enabled } = useMoralis();
   const chainId = parseInt(chainIdHex);
   const mintRingAddress =
@@ -28,7 +30,16 @@ export default function GifterMint({ params, setSigned }) {
   };
   const handleMint = async () => {
     await safeMintRingSync({
-      onError: (error) => console.log(error),
+      onError: (error) => {
+        console.log(error);
+        dispatch({
+          type: "error",
+          message: error.data.message,
+          title: error.code,
+          position: "topR",
+          // icon: "bell",
+        });
+      },
       onSuccess: handleSuccess,
     });
   };
@@ -43,7 +54,7 @@ export default function GifterMint({ params, setSigned }) {
         Mint Your Ring3
       </div>
       <div className={"my-[18px] text-[16px] font-[200] leading-[19px] italic"}>
-        make a vow to your parter whose address being the vow content.
+        A soul bound token will be minted to your and your partner's address.
       </div>
       <div>
         <Button

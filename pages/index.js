@@ -171,7 +171,7 @@ export default function Home() {
   return (
     <div className={"h-screen w-screen flex justify-center items-center "}>
       <div className={"flex items-center h-[480px] "}>
-        <div className=" ">
+        <div className={clsx(active && "mr-[40px]")}>
           <img src="/svg/ring.svg" alt="An SVG of an eye" />
           {active == 0 && (
             <p className="text-center text-2xl font-semibold italic">
@@ -208,7 +208,7 @@ export default function Home() {
                   "italic"
                 )}
               >
-                Sign
+                GifterSign
               </p>
               <p
                 className={clsx(
@@ -216,7 +216,7 @@ export default function Home() {
                   "italic"
                 )}
               >
-                PartnerSign
+                RecipientSign
               </p>
               <p
                 className={clsx(
@@ -224,7 +224,7 @@ export default function Home() {
                   "italic"
                 )}
               >
-                SyncMint
+                GifterMint
               </p>
               <p
                 className={clsx(
@@ -232,7 +232,7 @@ export default function Home() {
                   "italic"
                 )}
               >
-                Ring3
+                CheckRing3
               </p>
             </div>
           </div>

@@ -2,6 +2,7 @@ import Web3 from "web3";
 import { TextField, Button } from "@mui/material";
 import { useMoralis } from "react-moralis";
 import { useState, useEffect } from "react";
+
 export default function RecipientSign({ signed, setSigned, signedAddress }) {
   const { account } = useMoralis();
   const [address, setAddress] = useState("");
@@ -62,10 +63,12 @@ export default function RecipientSign({ signed, setSigned, signedAddress }) {
           "flex flex-col w-[180px] text-[64px] font-[200] leading-[64px]"
         }
       >
-        Accept the Partner
+        Accept Your Partner
       </div>
       <div className={"mt-[19px] text-[16px] font-[200] leading-[19px] italic"}>
-        Accept your Partner's invite!
+        {signed
+          ? "You have signed, please wait for your partner mint."
+          : "Sign your partner's address to accept him/her vow."}
       </div>
       <div className="my-[18px] w-[430px]">
         <TextField
@@ -85,10 +88,11 @@ export default function RecipientSign({ signed, setSigned, signedAddress }) {
         <Button
           size="small"
           variant="outlined"
+          color="primary"
           disabled={signed || error || preventClick}
           onClick={handleSign}
         >
-          Sign
+          {signed ? "Signed" : "Sign"}
         </Button>
       </div>
     </div>

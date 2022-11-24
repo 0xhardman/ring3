@@ -2,9 +2,22 @@ import "../styles/globals.css";
 import Head from "next/head";
 import { MoralisProvider } from "react-moralis";
 import { NotificationProvider } from "web3uikit";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "../components/Header";
 
 function MyApp({ Component, pageProps }) {
+  const theme = createTheme({
+    palette: {
+      primary: {
+        // Purple and green play nicely together.
+        main: "#000000",
+      },
+      secondary: {
+        // This is green.A700 as hex.
+        main: "#11cb5f",
+      },
+    },
+  });
   return (
     <div className={"bg-[#F5F5F5] text-black h-screen"}>
       <Head>
@@ -15,12 +28,14 @@ function MyApp({ Component, pageProps }) {
         />
         <link rel="icon" href="favicon.ico" />
       </Head>
-      <MoralisProvider initializeOnMount={false}>
-        <NotificationProvider>
-          <Header></Header>
-          <Component {...pageProps} />
-        </NotificationProvider>
-      </MoralisProvider>
+      <ThemeProvider theme={theme}>
+        <MoralisProvider initializeOnMount={false}>
+          <NotificationProvider>
+            <Header></Header>
+            <Component {...pageProps} />
+          </NotificationProvider>
+        </MoralisProvider>
+      </ThemeProvider>
     </div>
   );
 }

@@ -29,17 +29,19 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
     setPreventClick(true);
     if (address.length != 42) {
       setError(true);
-      setHelperText("too short address");
+      setHelperText("Address is too short, Please check it!");
       return;
     }
     if (!address.startsWith("0x")) {
       setError(true);
-      setHelperText("wrong address");
+      setHelperText("Wrong address");
       return;
     }
     if (account.toLowerCase() == address.toLowerCase()) {
       setError(true);
-      setHelperText("the sign address can't be same as your partner address");
+      setHelperText(
+        "The signing address can't be the same as your partner address"
+      );
       return;
     }
     if (!window.ethereum) return alert("Please Install Metamask");
@@ -72,6 +74,7 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
     if (signedAddress) setAddress(signedAddress);
   }, [signedAddress]);
   useEffect(() => {
+    setPreventClick(false);
     setError(false);
     setHelperText("");
   }, [address, account]);
@@ -85,7 +88,9 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
         Sign Your Partner
       </div>
       <div className={"mt-[19px] text-[16px] font-[200] leading-[19px] italic"}>
-        make a vow to your parter whose address being the vow content.
+        {signed
+          ? "Inform your partner to sign your address as her/his vow."
+          : "Make a vow to your partner whose address being the vow content."}
       </div>
       <div className="my-[18px] w-[430px]">
         <TextField
@@ -108,7 +113,8 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
           disabled={signed || error || preventClick}
           onClick={handleSign}
         >
-          Sign
+          {/* Sign */}
+          {signed ? "Signed" : "Sign"}
         </Button>
       </div>
     </div>
