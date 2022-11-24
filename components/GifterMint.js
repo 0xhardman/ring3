@@ -40,7 +40,7 @@ export default function GifterMint({ params }) {
       >
         Mint Your Ring3
       </div>
-      <div className={"mt-[19px] text-[16px] font-[200] leading-[19px] italic"}>
+      <div className={"my-[18px] text-[16px] font-[200] leading-[19px] italic"}>
         make a vow to your parter whose address being the vow content.
       </div>
       <div>

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
+import clsx from "clsx";
 
 import Sign from "../components/Sign";
 import Mint from "../components/Mint";
@@ -12,11 +13,14 @@ import { useMoralis } from "react-moralis";
 
 export default function Home() {
   const { account, isWeb3EnableLoading } = useMoralis();
-  //0:gifter sign 1:recipient sign  2:sync mint 3:check ring3
+
+  //0:loading 1:gifter sign 2:recipient sign  3:sync mint 4:check ring3
   const [active, setActive] = useState(0);
   const [signed, setSigned] = useState(false);
   const [mintParams, setMintParams] = useState({});
   const [signedAddress, setSignedAddress] = useState("");
+
+  // api getter
   const getGifterRecord = async (gifterAdd) => {
     const response = await fetch(
       `/api/getGifterRecord?gifterAdd=${gifterAdd}`,
@@ -51,25 +55,27 @@ export default function Home() {
 
     return await response.json();
   };
+
   const checkUser = async () => {
     try {
+      setActive(0);
       //warn: a record
       const gifterRecord = await getGifterRecord(account);
       const recipientRecords = await getRecipientRecord(account);
       const recipientRecord = recipientRecords[0];
       if (!gifterRecord && !recipientRecord) {
-        setActive(0);
+        setActive(1);
         setSigned(false);
         return;
       }
       if (gifterRecord) {
         if (!gifterRecord.recipientSig) {
-          setActive(0);
+          setActive(1);
           setSigned(true);
           setSignedAddress(gifterRecord.recipientAdd);
           return;
         } else {
-          setActive(2);
+          setActive(3);
           setSigned(true);
           setMintParams({
             toA: gifterRecord.gifterAdd,
@@ -82,12 +88,12 @@ export default function Home() {
       }
       if (recipientRecord) {
         if (!recipientRecord.recipientSig) {
-          setActive(1);
+          setActive(2);
           setSigned(false);
           setSignedAddress(recipientRecord.gifterAdd);
           return;
         } else {
-          setActive(1);
+          setActive(2);
           setSigned(true);
           setSignedAddress(recipientRecord.gifterAdd);
           return;
@@ -105,62 +111,73 @@ export default function Home() {
   return (
     <div className={"h-screen w-screen flex justify-center items-center "}>
       <div className={"flex items-center h-[480px] "}>
-        <div className="mr-[120px]">
+        <div className="mr-[120px] ">
           <img src="/svg/ring.svg" alt="An SVG of an eye" />
+          {active == 0 && (
+            <p className="text-center text-2xl font-semibold italic">
+              Loading...
+            </p>
+          )}
         </div>
-        {/* <div>
-          <div
-            className={
-              "flex flex-col w-[180px]  text-[64px] font-[200] leading-[64px]"
-            }
-          >
-            Sign Your Partner
-          </div>
-          <div
-            className={"mt-[19px] text-[16px] font-[200] leading-[19px] italic"}
-          >
-            make a vow to your parter whose address being the vow content.
-          </div>
-          <div>
-            <TextField
-              id="outlined-basic"
-              fullWidth
-              label="Partner Address"
-              variant="outlined"
-              className="my-[18px]"
-              size="small"
-            />
-          </div>
-          <div>
-            <Button size="small" variant="outlined">
-              Confirm
-            </Button>
-          </div>
-        </div> */}
-        {active == 0 && (
+        {active == 0 && <></>}
+        {active == 1 && (
           <GifterSign
             signed={signed}
             setSigned={setSigned}
             signedAddress={signedAddress}
           />
         )}
-        {active == 1 && (
+        {active == 2 && (
           <RecipientSign
             signed={signed}
             setSigned={setSigned}
             signedAddress={signedAddress}
           />
         )}
-        {active == 2 && <GifterMint params={mintParams} />}
+        {active == 3 && <GifterMint params={mintParams} />}
       </div>
-      {/* todo:componentlize  */}
-      <div className="absolute flex justify-center border-t-[3px] border-black border-dashed w-screen bg-blue bottom-[100px] px-[10px]">
-        <div className="w-[50%] flex justify-between">
-          <div>Sign</div>
-          <div>PartnerSign</div>
-          <div>SyncMint</div>
-          <div>Ring3</div>
-        </div>
+      {active != 0 && (
+        <>
+          <div className="absolute flex justify-center border-t-[3px] border-black border-dashed w-screen bg-blue bottom-[100px] px-[10px]">
+            <div className="w-[50%] flex justify-between ">
+              <p
+                className={clsx(
+                  active == 1 ? " text-black" : "text-gray-400",
+                  "italic"
+                )}
+              >
+                Sign
+              </p>
+              <p
+                className={clsx(
+                  active == 2 ? " text-black" : "text-gray-400",
+                  "italic"
+                )}
+              >
+                PartnerSign
+              </p>
+              <p
+                className={clsx(
+                  active == 3 ? " text-black" : "text-gray-400",
+                  "italic"
+                )}
+              >
+                SyncMint
+              </p>
+              <p
+                className={clsx(
+                  active == 4 ? " text-black" : "text-gray-400",
+                  "italic"
+                )}
+              >
+                Ring3
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+      <div className="absolute flex text-[250px] font-[800] top-[0px] right-[0] opacity-10 pointer-events-none">
+        Ring3
       </div>
     </div>
   );

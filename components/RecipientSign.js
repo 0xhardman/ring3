@@ -7,6 +7,7 @@ export default function RecipientSign({ signed, setSigned, signedAddress }) {
   const [address, setAddress] = useState("");
   const [helperText, setHelperText] = useState("");
   const [error, seterror] = useState("");
+  const [preventClick, setPreventClick] = useState(false);
 
   const acceptRing = async (ring3Record) => {
     const response = await fetch("/api/acceptRing", {
@@ -25,6 +26,7 @@ export default function RecipientSign({ signed, setSigned, signedAddress }) {
   };
 
   const handleSign = async () => {
+    setPreventClick(true);
     if (!window.ethereum) return alert("Please Install Metamask");
     const ethereum = window.ethereum;
     // message to sign
@@ -33,19 +35,21 @@ export default function RecipientSign({ signed, setSigned, signedAddress }) {
     const hashedMessage = Web3.utils.soliditySha3(message);
     // sign hashed message
     const signer = account?.toLowerCase();
-    const signature = await ethereum.request({
-      method: "personal_sign",
-      params: [hashedMessage, signer],
-    });
-    const data = {
-      recipientAdd: signer,
-      recipientSig: signature,
-    };
+
     try {
+      const signature = await ethereum.request({
+        method: "personal_sign",
+        params: [hashedMessage, signer],
+      });
+      const data = {
+        recipientAdd: signer,
+        recipientSig: signature,
+      };
       await acceptRing(data);
       setSigned(true);
     } catch (error) {
       console.log(error);
+      setPreventClick(false);
     }
   };
   useEffect(() => {
@@ -63,13 +67,12 @@ export default function RecipientSign({ signed, setSigned, signedAddress }) {
       <div className={"mt-[19px] text-[16px] font-[200] leading-[19px] italic"}>
         Accept your Partner's invite!
       </div>
-      <div>
+      <div className="my-[18px] w-[430px]">
         <TextField
           id="outlined-basic"
           fullWidth
           label="Your Partner Address"
           variant="outlined"
-          className="my-[18px] w-[430px]"
           size="small"
           helperText={helperText}
           value={address}
@@ -82,7 +85,7 @@ export default function RecipientSign({ signed, setSigned, signedAddress }) {
         <Button
           size="small"
           variant="outlined"
-          disabled={signed || error}
+          disabled={signed || error || preventClick}
           onClick={handleSign}
         >
           Sign

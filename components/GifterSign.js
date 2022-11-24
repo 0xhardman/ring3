@@ -6,7 +6,8 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
   const { account } = useMoralis();
   const [address, setAddress] = useState("");
   const [helperText, setHelperText] = useState("");
-  const [error, seterror] = useState("");
+  const [error, setError] = useState("");
+  const [preventClick, setPreventClick] = useState(false);
 
   const addRing3Record = async (ring3Record) => {
     const response = await fetch("/api/addRing3Record", {
@@ -25,6 +26,22 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
   };
 
   const handleSign = async () => {
+    setPreventClick(true);
+    if (address.length != 42) {
+      setError(true);
+      setHelperText("too short address");
+      return;
+    }
+    if (!address.startsWith("0x")) {
+      setError(true);
+      setHelperText("wrong address");
+      return;
+    }
+    if (account.toLowerCase() == address.toLowerCase()) {
+      setError(true);
+      setHelperText("the sign address can't be same as your partner address");
+      return;
+    }
     if (!window.ethereum) return alert("Please Install Metamask");
     const ethereum = window.ethereum;
     // message to sign
@@ -33,20 +50,21 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
     const hashedMessage = Web3.utils.soliditySha3(message);
     // sign hashed message
     const signer = account;
-    const signature = await ethereum.request({
-      method: "personal_sign",
-      params: [hashedMessage, signer],
-    });
-    const data = {
-      gifterAdd: signer,
-      recipientAdd: message,
-      gifterSig: signature,
-      recipientSig: "",
-    };
     try {
+      const signature = await ethereum.request({
+        method: "personal_sign",
+        params: [hashedMessage, signer],
+      });
+      const data = {
+        gifterAdd: signer,
+        recipientAdd: message,
+        gifterSig: signature,
+        recipientSig: "",
+      };
       await addRing3Record(data);
       setSigned(true);
     } catch (error) {
+      setPreventClick(false);
       console.log(error);
     }
   };
@@ -54,30 +72,8 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
     if (signedAddress) setAddress(signedAddress);
   }, [signedAddress]);
   useEffect(() => {
-    console.log(account);
-    if (!account) {
-      return;
-    }
-    if (address.length != 42) {
-      seterror(true);
-      setHelperText("too short address");
-      return;
-    }
-    if (!address.startsWith("0x")) {
-      seterror(true);
-      setHelperText("wrong address");
-      return;
-    }
-
-    if (account.toLowerCase() == address.toLowerCase()) {
-      seterror(true);
-      setHelperText("the sign address can't be same as your partner address");
-      return;
-    } else {
-      seterror(false);
-      setHelperText("");
-      return;
-    }
+    setError(false);
+    setHelperText("");
   }, [address, account]);
   return (
     <div>
@@ -91,13 +87,12 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
       <div className={"mt-[19px] text-[16px] font-[200] leading-[19px] italic"}>
         make a vow to your parter whose address being the vow content.
       </div>
-      <div>
+      <div className="my-[18px] w-[430px]">
         <TextField
           id="outlined-basic"
           fullWidth
           label="Partner Address"
           variant="outlined"
-          className="my-[18px]"
           size="small"
           helperText={helperText}
           value={address}
@@ -110,7 +105,7 @@ export default function GifterSign({ signed, setSigned, signedAddress }) {
         <Button
           size="small"
           variant="outlined"
-          disabled={signed || error}
+          disabled={signed || error || preventClick}
           onClick={handleSign}
         >
           Sign
