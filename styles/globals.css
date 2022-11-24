@@ -29,3 +29,18 @@ a {
   }
 }
 
+
+.bigline{
+  background: 
+        linear-gradient(90deg, #333 50%, transparent 0) repeat-x;
+    background-size: 8px 2px;
+    background-position: 0 0;
+    animation: linearGradientMove .3s infinite linear;
+
+}
+
+@keyframes linearGradientMove{
+    100% {
+        background-position: 8px 0;
+}
+}

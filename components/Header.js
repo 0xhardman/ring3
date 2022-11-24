@@ -35,12 +35,21 @@ export default function Home() {
   return (
     <nav className="absolute top-0 w-full">
       <div className="flex justify-between pt-[40px] px-[50px] m-[1px]">
-        <div>Ring3 logo</div>
-        <ConnectButton moralisAuth={false} />
-        {/* {account ? (
-          <button>{account}</button>
+        <div>
+          <img
+            className="h-[40px]"
+            src="https://s1.ax1x.com/2022/11/25/zJ79fg.png"
+            alt="Ring3"
+          />
+        </div>
+        {/* <ConnectButton moralisAuth={false} className="bg-black" /> */}
+        {account ? (
+          <div className="bg-[#aaa] px-3 rounded-full leading-9 ">
+            {account.slice(0, 5) + "..." + account.slice(-5)}
+          </div>
         ) : (
           <button
+            className="bg-[#aaa] px-3 rounded-full"
             onClick={async () => {
               await enableWeb3();
               if (typeof window !== "undefined") {
@@ -49,9 +58,9 @@ export default function Home() {
             }}
             disabled={isWeb3EnableLoading}
           >
-            connect
+            Connect
           </button>
-        )} */}
+        )}
       </div>
     </nav>
   );

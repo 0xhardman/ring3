@@ -200,7 +200,7 @@ export default function Home() {
       </div>
       {active != 0 && (
         <>
-          <div className="absolute flex justify-center border-t-[3px] border-black border-dashed w-screen bg-blue bottom-[100px] px-[10px]">
+          <div className="absolute flex justify-center w-screen bg-blue bottom-[100px] px-[10px] bigline">
             <div className="w-[50%] flex justify-between ">
               <p
                 className={clsx(
@@ -240,6 +240,17 @@ export default function Home() {
       )}
       <div className="absolute flex text-[250px] font-[800] top-[0px] right-[0] opacity-10 pointer-events-none">
         Ring3
+      </div>
+      <div className="absolute flex bottom-[20px] w-[100px] justify-between">
+        <div>
+          <img src="/svg/dc.svg" alt="" />
+        </div>
+        <div>
+          <img src="/svg/opensea.svg" alt="" />
+        </div>
+        <div>
+          <img src="/svg/twitter.svg" alt="" />
+        </div>
       </div>
     </div>
   );
