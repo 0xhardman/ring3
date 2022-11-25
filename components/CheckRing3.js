@@ -16,14 +16,30 @@ export default function CheckRing3({}) {
         Check Your Ring3
       </div>
       <div className={"my-[18px] text-[16px] font-[200] leading-[19px] italic"}>
-        Please check your Ring3 in opensea.
+        Please check your Ring3 in{" "}
+        <a
+          className="font-[400]"
+          href="https://testnets.opensea.io/collection/ring3"
+          target="_blank"
+        >
+          opensea
+        </a>{" "}
+        .
         <br />
         Welcome to join our{" "}
-        <a href="https://discord.gg/JaYGEp8kjZ" className="font-[400]">
+        <a
+          href="https://discord.gg/JaYGEp8kjZ"
+          className="font-[400]"
+          target="_blank"
+        >
           discord
         </a>
         , and follow our{" "}
-        <a href="https://twitter.com/ring3_official" className="font-[400]">
+        <a
+          href="https://twitter.com/ring3_official"
+          className="font-[400]"
+          target="_blank"
+        >
           twitter
         </a>
         .

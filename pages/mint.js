@@ -24,8 +24,8 @@ export default function Mint() {
     chainId in contractAddresses ? contractAddresses[chainId][0] : null;
 
   //chain reader
-  const { data, error, runContractFunction, isFetching, isLoading } =
-    useWeb3Contract();
+  // const { data, error, runContractFunction, isFetching, isLoading } =
+  //   useWeb3Contract();
 
   // api getter
   const getGifterRecord = async (gifterAdd) => {
@@ -62,6 +62,34 @@ export default function Mint() {
 
     return await response.json();
   };
+  const getNFT = async (account) => {
+    const response = await fetch(
+      `https://deep-index.moralis.io/api/v2/${account}/nft?` +
+        new URLSearchParams({
+          chain: "goerli",
+          format: "decimal",
+          token_addresses: mintRingAddress,
+          normalizeMetadata: "false",
+        }),
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          "X-API-Key":
+            "epx2z4VplgKbRU61fW8qM1jWgShnEnuadvcd1zobAVlMpsM0p5cp9gBQxIMpoIuM",
+        },
+        // headers: {
+        //   "Content-Type": "application/json; charset=utf8",
+        // },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    return await response.json();
+  };
 
   const checkUser = async () => {
     try {
@@ -82,20 +110,20 @@ export default function Mint() {
           setSignedAddress(gifterRecord.recipientAdd);
           return;
         } else {
-          const tokenId = await runContractFunction({
-            params: {
-              contractAddress: mintRingAddress,
-              abi: abi,
-              functionName: "tokenOfOwnerByIndex",
-              params: { owner: account, index: 0 },
-            },
-            onError: (error) => {
-              console.log(error);
-            },
-          });
-          console.log({ tokenId });
-          console.log(!tokenId);
-          if (!tokenId) {
+          // const tokenId = await runContractFunction({
+          //   params: {
+          //     contractAddress: mintRingAddress,
+          //     abi: abi,
+          //     functionName: "tokenOfOwnerByIndex",
+          //     params: { owner: account, index: 0 },
+          //   },
+          //   onError: (error) => {
+          //     console.log(error);
+          //   },
+          // });
+          const nfts = await getNFT(account);
+
+          if (!nfts.total) {
             setMintParams({
               toA: gifterRecord.gifterAdd,
               toB: gifterRecord.recipientAdd,
@@ -105,16 +133,6 @@ export default function Mint() {
             setActive(3);
             console.log(active);
           } else {
-            const uri = await runContractFunction({
-              params: {
-                contractAddress: mintRingAddress,
-                abi: abi,
-                functionName: "tokenURI",
-                params: { tokenId: tokenId },
-              },
-              onError: (error) => console.log(error),
-            });
-            console.log({ uri });
             setActive(4);
           }
           return;
@@ -127,34 +145,24 @@ export default function Mint() {
           setSignedAddress(recipientRecord.gifterAdd);
           return;
         } else {
-          const tokenId = await runContractFunction({
-            params: {
-              contractAddress: mintRingAddress,
-              abi: abi,
-              functionName: "tokenOfOwnerByIndex",
-              params: { owner: account, index: 0 },
-            },
-            onError: (error) => {
-              console.log(error);
-            },
-          });
-          console.log({ tokenId });
-          console.log(!tokenId);
-          if (!tokenId) {
+          // const tokenId = await runContractFunction({
+          //   params: {
+          //     contractAddress: mintRingAddress,
+          //     abi: abi,
+          //     functionName: "tokenOfOwnerByIndex",
+          //     params: { owner: account, index: 0 },
+          //   },
+          //   onError: (error) => {
+          //     console.log(error);
+          //   },
+          // });
+          const nfts = await getNFT(account);
+
+          if (!nfts.total) {
             setActive(2);
             setSigned(true);
             setSignedAddress(recipientRecord.gifterAdd);
           } else {
-            const uri = await runContractFunction({
-              params: {
-                contractAddress: mintRingAddress,
-                abi: abi,
-                functionName: "tokenURI",
-                params: { tokenId: tokenId },
-              },
-              onError: (error) => console.log(error),
-            });
-            console.log({ uri });
             setActive(4);
           }
           return;

@@ -58,7 +58,7 @@ export default function Home() {
             Mint
           </Link>
           <Link
-            href={"/"}
+            href={"/check"}
             className=" text-white bg-black text-[20px] leading-[40px] px-4 transform-gpu -skew-x-[10deg] mx-5"
           >
             Check
