@@ -242,15 +242,19 @@ export default function Home() {
         Ring3
       </div>
       <div className="absolute flex bottom-[20px] w-[100px] justify-between">
-        <div>
-          <img src="/svg/dc.svg" alt="" />
-        </div>
-        <div>
-          <img src="/svg/opensea.svg" alt="" />
-        </div>
-        <div>
-          <img src="/svg/twitter.svg" alt="" />
-        </div>
+        <a href="https://discord.gg/JaYGEp8kjZ">
+          <img src="/svg/dc.svg" alt="dc" />
+        </a>
+        <a href="https://opensea.io/">
+          <img src="/svg/opensea.svg" alt="opensea" />
+        </a>
+
+        <a
+          className="pointer-events-auto"
+          href="https://twitter.com/ring3_official"
+        >
+          <img src="/svg/twitter.svg" alt="twitter" />
+        </a>
       </div>
     </div>
   );
