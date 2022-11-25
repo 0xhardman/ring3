@@ -46,13 +46,13 @@ export default function Home() {
             />
           </div>
           <Link
-            href={"/intro"}
+            href={"/"}
             className=" text-white bg-black text-[20px] leading-[40px] px-4 transform-gpu -skew-x-[10deg] mx-5"
           >
             Intro
           </Link>
           <Link
-            href={"/"}
+            href={"/mint"}
             className=" text-white bg-black text-[20px] leading-[40px] px-4 transform-gpu -skew-x-[10deg] mx-5"
           >
             Mint
@@ -61,7 +61,7 @@ export default function Home() {
             href={"/"}
             className=" text-white bg-black text-[20px] leading-[40px] px-4 transform-gpu -skew-x-[10deg] mx-5"
           >
-            check
+            Check
           </Link>
         </div>
         {account ? (

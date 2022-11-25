@@ -1,246 +1,55 @@
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
-import clsx from "clsx";
-import GifterSign from "../components/GifterSign";
-import RecipientSign from "../components/RecipientSign";
-import GifterMint from "../components/GifterMint";
-import CheckRing3 from "../components/CheckRing3";
-import { useEffect, useState } from "react";
-import { TextField, Button } from "@mui/material";
-import { useMoralis, useWeb3Contract } from "react-moralis";
-import { abi, contractAddresses } from "../constants";
+import { useState } from "react";
 
-export default function Home() {
-  const { account, isWeb3EnableLoading, chainId: chainIdHex } = useMoralis();
-
-  //0:loading 1:gifter sign 2:recipient sign  3:sync mint 4:check ring3
-  const [active, setActive] = useState(0);
-  const [signed, setSigned] = useState(false);
-  const [mintParams, setMintParams] = useState({});
-  const [signedAddress, setSignedAddress] = useState("");
-
-  const chainId = parseInt(chainIdHex);
-  const mintRingAddress =
-    chainId in contractAddresses ? contractAddresses[chainId][0] : null;
-
-  //chain reader
-  const { data, error, runContractFunction, isFetching, isLoading } =
-    useWeb3Contract();
-
-  // api getter
-  const getGifterRecord = async (gifterAdd) => {
-    const response = await fetch(
-      `/api/getGifterRecord?gifterAdd=${gifterAdd}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json; charset=utf8",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    return await response.json();
-  };
-  const getRecipientRecord = async (recipientAdd) => {
-    const response = await fetch(
-      `/api/getRecipientRecord?recipientAdd=${recipientAdd}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json; charset=utf8",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    return await response.json();
-  };
-
-  const checkUser = async () => {
-    try {
-      setActive(0);
-      //warn: a record
-      const gifterRecord = await getGifterRecord(account);
-      const recipientRecords = await getRecipientRecord(account);
-      const recipientRecord = recipientRecords[0];
-      if (!gifterRecord && !recipientRecord) {
-        setActive(1);
-        setSigned(false);
-        return;
-      }
-      if (gifterRecord) {
-        if (!gifterRecord.recipientSig) {
-          setActive(1);
-          setSigned(true);
-          setSignedAddress(gifterRecord.recipientAdd);
-          return;
-        } else {
-          const tokenId = await runContractFunction({
-            params: {
-              contractAddress: mintRingAddress,
-              abi: abi,
-              functionName: "tokenOfOwnerByIndex",
-              params: { owner: account, index: 0 },
-            },
-            onError: (error) => {
-              console.log(error);
-            },
-          });
-          console.log({ tokenId });
-          console.log(!tokenId);
-          if (!tokenId) {
-            setMintParams({
-              toA: gifterRecord.gifterAdd,
-              toB: gifterRecord.recipientAdd,
-              signatureA: gifterRecord.gifterSig,
-              signatureB: gifterRecord.recipientSig,
-            });
-            setActive(3);
-            console.log(active);
-          } else {
-            const uri = await runContractFunction({
-              params: {
-                contractAddress: mintRingAddress,
-                abi: abi,
-                functionName: "tokenURI",
-                params: { tokenId: tokenId },
-              },
-              onError: (error) => console.log(error),
-            });
-            console.log({ uri });
-            setActive(4);
-          }
-          return;
-        }
-      }
-      if (recipientRecord) {
-        if (!recipientRecord.recipientSig) {
-          setActive(2);
-          setSigned(false);
-          setSignedAddress(recipientRecord.gifterAdd);
-          return;
-        } else {
-          const tokenId = await runContractFunction({
-            params: {
-              contractAddress: mintRingAddress,
-              abi: abi,
-              functionName: "tokenOfOwnerByIndex",
-              params: { owner: account, index: 0 },
-            },
-            onError: (error) => {
-              console.log(error);
-            },
-          });
-          console.log({ tokenId });
-          console.log(!tokenId);
-          if (!tokenId) {
-            setActive(2);
-            setSigned(true);
-            setSignedAddress(recipientRecord.gifterAdd);
-          } else {
-            const uri = await runContractFunction({
-              params: {
-                contractAddress: mintRingAddress,
-                abi: abi,
-                functionName: "tokenURI",
-                params: { tokenId: tokenId },
-              },
-              onError: (error) => console.log(error),
-            });
-            console.log({ uri });
-            setActive(4);
-          }
-          return;
-        }
-      }
-    } catch (err) {
-      console.log(err);
+export default function Intro() {
+  const [ring3position, setRing3position] = useState({
+    top: "0",
+    left: "0",
+  });
+  const handleMouseMove = (e) => {
+    if (typeof document != "undefined" && typeof screen != "undefined") {
+      const x = e.nativeEvent.pageX;
+      const y = e.nativeEvent.pageY;
+      const h = screen.height;
+      const w = screen.width;
+      //   const ring3move = document.getElementById("ring3move");
+      console.log({ x, y, h, w });
+      setRing3position({
+        top: (h - 80 - y).toString() + "px",
+        left: (w - x).toString() + "px",
+      });
+      ring3move.style.top = h - y;
+      ring3move.style.left = w - x;
     }
   };
-  useEffect(() => {
-    if (!account) return;
-    checkUser();
-    console.log(active);
-  }, [account, signed]);
+
   return (
-    <div className={"h-screen w-screen flex justify-center items-center "}>
-      <div className={"flex items-center h-[480px] "}>
-        <div className={clsx(active && "mr-[40px]")}>
-          <img src="/svg/ring.svg" alt="An SVG of an eye" />
-          {active == 0 && (
-            <p className="text-center text-2xl font-semibold italic">
-              Loading...
-            </p>
-          )}
-        </div>
-        {active == 0 && <></>}
-        {active == 1 && (
-          <GifterSign
-            signed={signed}
-            setSigned={setSigned}
-            signedAddress={signedAddress}
-          />
-        )}
-        {active == 2 && (
-          <RecipientSign
-            signed={signed}
-            setSigned={setSigned}
-            signedAddress={signedAddress}
-          />
-        )}
-        {active == 3 && (
-          <GifterMint params={mintParams} setSigned={setSigned} />
-        )}
-        {active == 4 && <CheckRing3 />}
+    <div
+      className="w-screem h-screen flex flex-col justify-center items-center"
+      onMouseMove={handleMouseMove}
+    >
+      <div className="flex flex-col w-[500px]  ">
+        <p className="text-[90px] font-[500] leading-[70px]">ONE ADDR</p>
+        <p className="text-[90px] font-[500] leading-[70px]">FOREVER</p>
+        <p className="text-[90px] font-[500] leading-[70px]">ONE RING3</p>
+        <p className="text-[16px] font-[200] italic mt-[10px]">
+          Has anyone promised you that he will only love you in his life?
+          <br />
+          But the word of mouth is no good in the end?
+          <br />
+          Cast an SBT with your partner!
+          <br />
+          The more assets in your address, the more sincere you are!
+        </p>
       </div>
-      {active != 0 && (
-        <>
-          <div className="absolute flex justify-center w-screen bg-blue bottom-[100px] px-[10px] bigline">
-            <div className="w-[50%] flex justify-between ">
-              <p
-                className={clsx(
-                  active == 1 ? " text-black" : "text-gray-400",
-                  "italic"
-                )}
-              >
-                GifterSign
-              </p>
-              <p
-                className={clsx(
-                  active == 2 ? " text-black" : "text-gray-400",
-                  "italic"
-                )}
-              >
-                RecipientSign
-              </p>
-              <p
-                className={clsx(
-                  active == 3 ? " text-black" : "text-gray-400",
-                  "italic"
-                )}
-              >
-                GifterMint
-              </p>
-              <p
-                className={clsx(
-                  active == 4 ? " text-black" : "text-gray-400",
-                  "italic"
-                )}
-              >
-                CheckRing3
-              </p>
-            </div>
-          </div>
-        </>
-      )}
-      <div className="absolute flex text-[250px] font-[800] top-[0px] right-[0] opacity-10 pointer-events-none">
+      <div
+        id="ring3move"
+        className="absolute flex text-[250px] font-[800] opacity-10 pointer-events-none leading-[190px] transform -translate-y-1/2 -translate-x-1/2 "
+        style={{
+          top: "0",
+          left: "0",
+        }}
+        style={ring3position}
+      >
         Ring3
       </div>
     </div>
