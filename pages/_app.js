@@ -4,6 +4,7 @@ import { MoralisProvider } from "react-moralis";
 import { NotificationProvider } from "web3uikit";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 function MyApp({ Component, pageProps }) {
   const theme = createTheme({
@@ -33,6 +34,7 @@ function MyApp({ Component, pageProps }) {
           <NotificationProvider>
             <Header></Header>
             <Component {...pageProps} />
+            <Footer></Footer>
           </NotificationProvider>
         </MoralisProvider>
       </ThemeProvider>

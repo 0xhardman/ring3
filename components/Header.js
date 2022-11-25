@@ -1,6 +1,7 @@
 import { useMoralis } from "react-moralis";
 import { ConnectButton } from "web3uikit";
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const {
@@ -35,14 +36,34 @@ export default function Home() {
   return (
     <nav className="absolute top-0 w-full">
       <div className="flex justify-between pt-[40px] px-[50px] m-[1px]">
-        <div>
-          <img
-            className="h-[40px]"
-            src="https://s1.ax1x.com/2022/11/25/zJ79fg.png"
-            alt="Ring3"
-          />
-        </div>
         {/* <ConnectButton moralisAuth={false} className="bg-black" /> */}
+        <div className="flex">
+          <div>
+            <img
+              className="h-[40px]"
+              src="https://s1.ax1x.com/2022/11/25/zJ79fg.png"
+              alt="Ring3"
+            />
+          </div>
+          <Link
+            href={"/intro"}
+            className=" text-white bg-black text-[20px] leading-[40px] px-4 transform-gpu -skew-x-[10deg] mx-5"
+          >
+            Intro
+          </Link>
+          <Link
+            href={"/"}
+            className=" text-white bg-black text-[20px] leading-[40px] px-4 transform-gpu -skew-x-[10deg] mx-5"
+          >
+            Mint
+          </Link>
+          <Link
+            href={"/"}
+            className=" text-white bg-black text-[20px] leading-[40px] px-4 transform-gpu -skew-x-[10deg] mx-5"
+          >
+            check
+          </Link>
+        </div>
         {account ? (
           <div className="bg-[#aaa] px-3 rounded-full leading-9 ">
             {account.slice(0, 5) + "..." + account.slice(-5)}
