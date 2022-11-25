@@ -4,6 +4,7 @@ import clsx from "clsx";
 import GifterSign from "../components/GifterSign";
 import RecipientSign from "../components/RecipientSign";
 import GifterMint from "../components/GifterMint";
+import CheckRing3 from "../components/CheckRing3";
 import { useEffect, useState } from "react";
 import { TextField, Button } from "@mui/material";
 import { useMoralis, useWeb3Contract } from "react-moralis";
@@ -197,6 +198,7 @@ export default function Home() {
         {active == 3 && (
           <GifterMint params={mintParams} setSigned={setSigned} />
         )}
+        {active == 4 && <CheckRing3 />}
       </div>
       {active != 0 && (
         <>
