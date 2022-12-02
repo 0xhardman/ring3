@@ -8,9 +8,11 @@ export default function Footer() {
         <a href="https://testnets.opensea.io/collection/ring3" target="_blank">
           <img src="/svg/opensea.svg" alt="opensea" />
         </a>
-
         <a href="https://twitter.com/ring3_official" target="_blank">
           <img src="/svg/twitter.svg" alt="twitter" />
+        </a>
+        <a href="https://github.com/SAZZM/ring3" target="_blank">
+          <img src="/svg/github.svg" alt="github" />
         </a>
       </div>
     </div>
